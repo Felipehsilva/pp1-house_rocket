@@ -5,6 +5,55 @@
 ![](rocket_4x.png)
 
 
+
+# Dataset Content
+
+
+
+**id** 
+
+**date** 
+
+**price** 
+
+**bedrooms** 
+
+**bathrooms** 
+
+**sqtf_living** 
+
+**sqtf_lot** 
+
+**floors** 
+
+**waterfront** 
+
+**view** 
+
+**condition** 
+
+**grade** 
+
+**sqtf_above** 
+
+**sqtf_basement** 
+
+**yr_built** 
+
+**yr_renovated** 
+
+**zipcode** 
+
+**lat** 
+
+**long** 
+
+**sqft_living15** 
+
+**sqft_lot15** 
+
+
+
 # 1. Business Problem.
 
 House Rocket is a platform for buying and selling real estate.
@@ -39,7 +88,7 @@ My strategy to solve this challenge was:
 
 **Step 01. Data Description:** My goal is to use statistics metrics to identify data outside the scope of business.
 
-**Step 02. Feature Engineering:** Derive new attributes based on the original variables to better describe the phenomenon that will be modeled.
+**Step 02. Feature Engineering:** 
 
 **Step 03. Data Filtering:** Filter rows and select columns that do not contain information for modeling or that do not match the scope of the business.
 
