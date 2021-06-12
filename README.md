@@ -15,6 +15,8 @@ Currently, the process is all about using external sources to find good deals (A
 
 # 2. Business Assumptions.
 
+
+
 The assumptions about the business problem is as follows:
 
 - **CVDs are the number 1 cause of death globally**: more people die annually from CVDs than from any other cause.
@@ -30,6 +32,8 @@ PS 2: You can find useful information at **section 1** of my [notebook](#).
 
 
 # 3. Solution Strategy
+
+Planejamento da solução  é colocado os 5 pricipais insights do negócio. Descoberstas feitas através da análise  exploratoria. Podem ser validação de hipoeteses, uma base line e uma comparação de duas variaveis
 
 My strategy to solve this challenge was:
 
@@ -58,6 +62,7 @@ My strategy to solve this challenge was:
 **Hypothesis 01:** The cases of heart diseases does not significantly depend on the height.
 
 **False.** As observed, up to ~165 cm there are significantly more cases of heart diseases. Then, above this height, there are fewer cases.
+
 
 **Hypothesis 02:** The are more cases of heart diseases for people who smokes than for people who does not.
 
@@ -126,3 +131,16 @@ This means that having a portfolio of 70k patients that would go through the cli
 **2.** **Run a Design Discovery** to uncover facts that could be missing in our analysis in order to enrich the data that we have and improve the model performance.
 
 **3.** Build a **model retraining pipeline**.
+
+
+
+
+-------------------------O que um portifolio deve ter----------
+
+1- Questão de negócio. O que você quer resolver
+2- Premissas do negócio. Alguma coisa que assumi para seguir com o projeto, assumi que valores acima de X são erros, tal valor acontece por causa Y. Coisas que assumo para construir o projeto
+3- Planejamento da solução
+4- Os 5 pricipais insights de negócio
+5- Resultado financeiro para o negócio
+6- Conclusão - Seu objetivo foi alcançado?
+7- Proximos passos
