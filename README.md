@@ -20,9 +20,9 @@
 
 **bathrooms** 
 
-**sqtf_living** 
+**sqft_living** 
 
-**sqtf_lot** 
+**sqft_lot** 
 
 **floors** 
 
@@ -34,7 +34,7 @@
 
 **grade** 
 
-**sqtf_above** 
+**sqft_above** 
 
 **sqtf_basement** 
 
