@@ -20,9 +20,9 @@
 
 **bathrooms** 
 
-**sqtf_living** 
+**sqft_living** 
 
-**sqtf_lot** 
+**sqft_lot** 
 
 **floors** 
 
