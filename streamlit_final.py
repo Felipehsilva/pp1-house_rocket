@@ -110,8 +110,8 @@ def region_overview( data, geofile ):
 
     c1, c2 = st.columns( ( 1, 1 ) )
     c1.header( 'Portfolio Density' )
-    #Getting only the sample below in order to not break Streamlit load
-    df = data.sample( 2000 )
+    #Getting only the sample below in order to not break Streamlit load and render
+    df = data.sample( 100 )
     
    
 
