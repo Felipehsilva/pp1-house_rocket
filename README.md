@@ -58,10 +58,10 @@ The analysis identified specific properties with high profit potential. By follo
   
 Based on the analysis, the project identified:
 
-* **Total properties to purchase:** [Insert Number]
-* **Total investment required:** $[Insert Value]
-* **Expected revenue from sales:** $[Insert Value]
-* **Estimated Total Profit:** $[Insert Value]
+* **Total properties to purchase:** 21613
+* **Total investment required:** $[5,345,126,211]
+* **Expected revenue from sales:** $[6,466,916,473.5]
+* **Estimated Total Profit:** $[1,121,790,262]
 
 ### 6. Conclusions
 Data-driven decision-making allows House Rocket to scale its operations. Instead of manual searches, the company can now use automated filters to find the best 10% of deals in the market instantly, ensuring a higher return on investment.
@@ -70,3 +70,10 @@ Data-driven decision-making allows House Rocket to scale its operations. Instead
 * Identifying data errors early (outliers) is crucial for accurate median calculations.
 * The importance of translating technical metrics (like sqft) into business insights (profit margin).
 * Streamlit is a powerful tool for delivering data to end-users in an accessible way.
+
+  
+### 8. Next Steps to Improve
+* **Machine Learning:** Implement a regression model to predict property prices and appreciation potential more accurately.
+* **Real-time Data:** Connect the dashboard to a real estate API to provide live market updates.
+* **Renovation Impact:** Analyze how specific renovations (adding a bathroom or improving the basement) impact the final ROI.
+* **Economic Indicators:** Incorporate external data such as interest rates and local neighborhood development plans.
