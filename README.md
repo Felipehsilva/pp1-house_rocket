@@ -47,7 +47,7 @@ House Rocket is a platform for buying and selling real estate. The company's CEO
 6.  **Interactive Dashboard:** Developing a Streamlit app to allow the CEO to filter data by attributes.
 
 ### 4. Top 3 Data Insights
-* **Insight 01:** Properties with a waterfront view are, on average, over 200% more expensive than those without.
+* **Insight 01:** Properties with a waterfront view are, on average, over 3 times more expensive than those without.
 * **Insight 02:** Houses with a construction grade above 10 have a much higher appreciation rate regardless of the year built.
 * **Insight 03:** The best time to sell properties in this region is during the Summer, where prices reach their peak.
 
