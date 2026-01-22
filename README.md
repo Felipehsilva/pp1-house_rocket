@@ -59,9 +59,9 @@ The analysis identified specific properties with high profit potential. By follo
 Based on the analysis, the project identified:
 
 * **Total properties to purchase:** 21613
-* **Total investment required:** $[5,345,126,211]
-* **Expected revenue from sales:** $[6,466,916,473.5]
-* **Estimated Total Profit:** $[1,121,790,262]
+* **Total investment required:** $ 5,345,126,211
+* **Expected revenue from sales:** $ 6,466,916,473.5
+* **Estimated Total Profit:** $ 1,121,790,262
 
 ### 6. Conclusions
 Data-driven decision-making allows House Rocket to scale its operations. Instead of manual searches, the company can now use automated filters to find the best 10% of deals in the market instantly, ensuring a higher return on investment.
