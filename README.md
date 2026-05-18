@@ -1,6 +1,6 @@
 # House Rocket - Real Estate Analytics
 👉 **Full project explanation available on my blog:**  
-🔗 [Click here](https://dataineverywhere.ct.ws/projects/house-rocket-case-data-driven-real-estate-investment-strategy-with-python/)
+🔗 [Click here](https://dataineverywhere.my-board.org/projects/house-rocket-case-data-driven-real-estate-investment-strategy-with-python/)
 
 This project aims to provide strategic insights for House Rocket, a digital platform whose business model involves purchasing and reselling properties using data analysis to maximize profit.
 
