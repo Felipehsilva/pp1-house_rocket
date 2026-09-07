@@ -13,7 +13,7 @@ import plotly.express as px
 from folium.plugins import HeatMap
 import joblib
 
-MODEL_PATH = 'models/house_price_random_forest_pipeline.joblib'
+MODEL_PATH = 'models/house_price_random_forest_compact_pipeline.joblib'
 
 @st.cache_resource
 def load_house_price_model():
