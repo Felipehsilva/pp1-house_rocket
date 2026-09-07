@@ -9,3 +9,4 @@ requests==2.32.2
 shapely==2.1.2
 pyproj==3.6.1
 pyogrio==0.10.0
+joblib==1.5.3
