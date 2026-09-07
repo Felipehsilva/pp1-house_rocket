@@ -593,11 +593,7 @@ if __name__ == "__main__":
                             f'${predicted_price:,.2f}'
                         )
 
-                        st.info(
-                            'Esta previsão é baseada no padrão histórico da base utilizada no '
-                            'treinamento. Use-a como apoio à decisão, e não como uma avaliação '
-                            'oficial do imóvel.'
-                        )
+                        
 
                         with st.expander('Ver dados enviados ao modelo'):
                             st.dataframe(new_property, use_container_width=True)
