@@ -62,7 +62,7 @@ def data_overview( data ):
     f_attributes = st.sidebar.multiselect( 'Enter columns', data.columns ) 
     f_zipcode = st.sidebar.multiselect( 'Enter zipcode', data['zipcode'].unique() )
 
-    st.title( 'Data Overview' )
+    st.title( 'Visão geral dos dados')
     #Select columns and zip
     if ( f_zipcode != [] ) & ( f_attributes != [] ):
         data = data.loc[data['zipcode'].isin( f_zipcode ), f_attributes]
@@ -94,7 +94,7 @@ def data_overview( data ):
 
     df.columns = ['ZIPCODE', 'TOTAL HOUSES', 'PRICE', 'SQRT LIVING', 'PRICE/M2']
 
-    c1.header( 'Average Values' )
+    c1.header( 'Valores Médios' )
     c1.dataframe( df, height=600 )
 
     # Statistic Descriptive
@@ -109,7 +109,7 @@ def data_overview( data ):
     df1 = pd.concat([max_, min_, media, mediana, std], axis=1 ).reset_index()
     df1.columns = ['attributes', 'max', 'min', 'mean', 'median', 'std'] 
 
-    c2.header( 'Descriptive Analysis' )
+    c2.header( 'Análise Descritiva' )
     c2.dataframe( df1, height=800 )
 
     return None
@@ -119,7 +119,7 @@ def region_overview( data, geofile ):
     st.title( 'Region Overview' )
 
     c1, c2 = st.columns( ( 1, 1 ) )
-    c1.header( 'Portfolio Density' )
+    c1.header( 'Densidade do Portfólio' )
     #Getting only the sample below in order to not break Streamlit load and render
     df = data.sample( 100 )
     
@@ -179,7 +179,7 @@ def region_overview( data, geofile ):
     #  #   folium_static( region_price_map )
     
 
-    c2.header('Price Density (Heatmap)')
+    c2.header('Densidade de Preço (Mapa de Calor)')
     region_price_map = folium.Map(
     location=[data['lat'].mean(), data['long'].mean()],
     zoom_start=11)
@@ -198,18 +198,18 @@ def region_overview( data, geofile ):
 
 
 def set_commercial( data ):
-    st.sidebar.title( 'Commercial Options' )
-    st.title( 'Commercial Attributes' )
+    st.sidebar.title( 'Opções Comerciais' )
+    st.title( 'Atributos Comerciais' )
 
     # ---------- Average Price per year built
     # setup filters
     min_year_built = int( data['yr_built'].min() )
     max_year_built = int( data['yr_built'].max() )
 
-    st.sidebar.subheader( 'Select Max Year Built' )
-    f_year_built = st.sidebar.slider( 'Year Built', min_year_built, max_year_built, min_year_built )
+    st.sidebar.subheader( 'Selecionar Ano Máximo de Construção' )
+    f_year_built = st.sidebar.slider( 'Ano de Construção', min_year_built, max_year_built, min_year_built )
 
-    st.header( 'Average price per year built' )
+    st.header( 'Preço médio por ano de construção' )
 
     # get data
     data['date'] = pd.to_datetime( data['date'] ).dt.strftime( '%Y-%m-%d' )
@@ -222,8 +222,8 @@ def set_commercial( data ):
 
 
     # ---------- Average Price per day ------------------
-    st.header( 'Average Price per day' )
-    st.sidebar.subheader( 'Select Max Date' )
+    st.header( 'Preço Médio por Dia' )
+    st.sidebar.subheader( 'Selecionar Data Máxima' )
 
     # setup filters
     min_date = datetime.strptime( data['date'].min(), '%Y-%m-%d' )
@@ -240,8 +240,8 @@ def set_commercial( data ):
     st.plotly_chart( fig)
 
     # ---------- Histogram -----------
-    st.header( 'Price Distribuition' )
-    st.sidebar.subheader( 'Select Max Price' )
+    st.header( 'Distribuição de Preços' )
+    st.sidebar.subheader( 'Selecionar Preço Máximo' )
 
     # filters
     min_price = int( data['price'].min() )
@@ -259,37 +259,37 @@ def set_commercial( data ):
 
 
 def set_phisical( data ):
-    st.sidebar.title( 'Attributes Options' )
-    st.title( 'House Attributes' )
+    st.sidebar.title( 'Opções de Atributos' )
+    st.title( 'Atributos da Casa' )
 
     # filters
-    f_bedrooms = st.sidebar.selectbox( 'Max number of bedrooms', 
+    f_bedrooms = st.sidebar.selectbox( 'Número máximo de quartos', 
                                         sorted( set( data['bedrooms'].unique() ) ) )
-    f_bathrooms = st.sidebar.selectbox( 'Max number of bath', 
+    f_bathrooms = st.sidebar.selectbox( 'Número máximo de banheiros', 
                                         sorted( set( data['bathrooms'].unique() ) ) )
 
     c1, c2 = st.columns( 2 )
 
     # Houses per bedrooms
-    c1.header( 'Houses per bedrooms' )
+    c1.header( 'Casas por quartos' )
     df = data[data['bedrooms'] < f_bedrooms]
     fig = px.histogram( df, x='bedrooms', nbins=19 )
     c1.plotly_chart( fig )
 
     # Houses per bathrooms
-    c2.header( 'Houses per bathrooms' )
+    c2.header( 'Casas por banheiros' )
     df = data[data['bathrooms'] < f_bathrooms]
     fig = px.histogram( df, x='bathrooms', nbins=10 )
     c2.plotly_chart( fig )
 
     # filters
-    f_floors = st.sidebar.selectbox('Max number of floors', sorted( set( data['floors'].unique() ) ) )
-    f_waterview = st.sidebar.checkbox('Only House with Water View' )
+    f_floors = st.sidebar.selectbox('Número máximo de andares', sorted( set( data['floors'].unique() ) ) )
+    f_waterview = st.sidebar.checkbox('Apenas Casas com Vista para a Água' )
 
     c1, c2 = st.columns( 2 ) #  Cria Duas colunas 50%/50% eh parecido com st.columns((1, 1)), porem essa segunda me permite customizar o tamanho de cada coluna
 
     # Houses per floors
-    c1.header( 'Houses per floors' )
+    c1.header( 'Casas por andares' )
     df = data[data['floors'] < f_floors]
     fig = px.histogram( df, x='floors', nbins=19 )
     c1.plotly_chart( fig )
@@ -301,7 +301,7 @@ def set_phisical( data ):
         df = data.copy()
 
     fig = px.histogram( df, x='waterfront', nbins=10 )
-    c2.header( 'Houses per water view' )
+    c2.header( 'Casas por vista para a água' )
     c2.plotly_chart( fig )
 
     return None
