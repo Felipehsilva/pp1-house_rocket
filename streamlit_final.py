@@ -59,8 +59,8 @@ def set_attributes( data ):
 
 
 def data_overview( data ):
-    f_attributes = st.sidebar.multiselect( 'Enter columns', data.columns ) 
-    f_zipcode = st.sidebar.multiselect( 'Enter zipcode', data['zipcode'].unique() )
+    f_attributes = st.sidebar.multiselect( 'Digite as colunas', data.columns ) 
+    f_zipcode = st.sidebar.multiselect( 'Digite o código postal', data['zipcode'].unique() )
 
     st.title( 'Visão geral dos dados')
     #Select columns and zip
