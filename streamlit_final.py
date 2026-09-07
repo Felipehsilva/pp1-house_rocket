@@ -6,14 +6,17 @@ import pandas    as pd
 import numpy     as np
 import folium
 import requests
-from datetime import datetime, time
+from datetime import datetime, time, date
 from streamlit_folium import folium_static
 from folium.plugins   import MarkerCluster
 import plotly.express as px 
 from folium.plugins import HeatMap
 import joblib
+import os
 
 MODEL_PATH = 'models/house_price_random_forest_compact_pipeline.joblib'
+if not os.path.exists(MODEL_PATH):
+    MODEL_PATH = 'models/house_price_random_forest_pipeline.joblib'
 
 @st.cache_resource
 def load_house_price_model():
@@ -348,6 +351,11 @@ if __name__ == "__main__":
             c1, c2, c3 = st.columns(3)
 
             with c1:
+                sale_date = st.date_input(
+                    'Data estimada da venda',
+                    value=date.today()
+                )
+
                 bedrooms = st.number_input(
                     'Quartos',
                     min_value=1,
@@ -375,14 +383,15 @@ if __name__ == "__main__":
                     index=0
                 )
 
-                grade = st.selectbox(
-                    'Qualidade / grade do imóvel',
-                    options=list(range(1, 14)),
-                    index=6,
-                    help='1 representa qualidade mais baixa e 13 representa qualidade mais alta.'
+            with c2:
+                yrbuilt = st.number_input(
+                    'Ano de construção',
+                    min_value=1900,
+                    max_value=sale_date.year,
+                    value=2000,
+                    step=1
                 )
 
-            with c2:
                 bathrooms = st.number_input(
                     'Banheiros',
                     min_value=0.5,
@@ -411,6 +420,22 @@ if __name__ == "__main__":
                     help='1 representa condição mais baixa e 5 representa condição mais alta.'
                 )
 
+            with c3:
+                yrrenovated = st.number_input(
+                    'Ano da última reforma (0 se nunca foi reformado)',
+                    min_value=0,
+                    max_value=sale_date.year,
+                    value=0,
+                    step=1
+                )
+
+                grade = st.selectbox(
+                    'Qualidade / grade do imóvel',
+                    options=list(range(1, 14)),
+                    index=6,
+                    help='1 representa qualidade mais baixa e 13 representa qualidade mais alta.'
+                )
+
                 sqft_above = st.number_input(
                     'Área acima do solo (sqft)',
                     min_value=0,
@@ -418,7 +443,6 @@ if __name__ == "__main__":
                     step=50
                 )
 
-            with c3:
                 sqft_basement = st.number_input(
                     'Área do porão (sqft)',
                     min_value=0,
@@ -478,9 +502,38 @@ if __name__ == "__main__":
             if len(str(int(zipcode))) != 5:
                 st.warning('O CEP (zipcode) deve possuir cinco dígitos.')
                 is_valid = False
+            if yrbuilt > sale_date.year:
+                st.warning('O ano de construção (yrbuilt) não pode ser maior que o ano da venda.')
+                is_valid = False
+            if yrrenovated > sale_date.year:
+                st.warning('O ano da reforma (yrrenovated) não pode ser maior que o ano da venda.')
+                is_valid = False
+            if yrrenovated > 0 and yrrenovated < yrbuilt:
+                st.warning('O ano da reforma (yrrenovated) não pode ser menor que o ano de construção.')
+                is_valid = False
+            if (sale_date.year - yrbuilt) < 0:
+                st.warning('A idade do imóvel (property_age) não pode ser negativa.')
+                is_valid = False
+            if yrrenovated > 0 and (sale_date.year - yrrenovated) < 0:
+                st.warning('O tempo desde a reforma (years_since_renovation) não pode ser negativo.')
+                is_valid = False
 
             if is_valid:
                 # Calculo automatico das variaveis derivadas
+                sale_year = sale_date.year
+                sale_month = sale_date.month
+                sale_quarter = ((sale_month - 1) // 3) + 1
+
+                property_age = sale_year - yrbuilt
+
+                was_renovated = int(yrrenovated > 0)
+
+                years_since_renovation = (
+                    sale_year - yrrenovated
+                    if yrrenovated > 0
+                    else None
+                )
+
                 has_basement = int(sqft_basement > 0)
                 living_to_lot_ratio = sqft_living / sqft_lot
                 bathrooms_per_bedroom = bathrooms / bedrooms
@@ -500,29 +553,54 @@ if __name__ == "__main__":
                     'zipcode': zipcode,
                     'lat': latitude,
                     'long': longitude,
+                    'sale_year': sale_year,
+                    'sale_month': sale_month,
+                    'sale_quarter': sale_quarter,
+                    'property_age': property_age,
+                    'was_renovated': was_renovated,
+                    'years_since_renovation': years_since_renovation,
                     'has_basement': has_basement,
                     'living_to_lot_ratio': living_to_lot_ratio,
                     'bathrooms_per_bedroom': bathrooms_per_bedroom
                 }])
 
                 try:
-                    predicted_price = house_price_model.predict(new_property)[0]
+                    # Checagem programatica das colunas esperadas pelo pre-processador
+                    if hasattr(house_price_model, 'named_steps') and 'preprocessor' in house_price_model.named_steps:
+                        preproc = house_price_model.named_steps['preprocessor']
+                        if hasattr(preproc, 'feature_names_in_'):
+                            expected_columns = list(preproc.feature_names_in_)
+                        else:
+                            expected_columns = list(new_property.columns)
+                    else:
+                        expected_columns = list(new_property.columns)
 
-                    st.success('Previsão gerada com sucesso.')
+                    missing_columns = set(expected_columns) - set(new_property.columns)
 
-                    st.metric(
-                        'Preço estimado de venda',
-                        f'${predicted_price:,.2f}'
-                    )
+                    if missing_columns:
+                        st.error(
+                            f'Não foi possível realizar a previsão. Colunas ausentes: '
+                            f'{sorted(missing_columns)}'
+                        )
+                    else:
+                        new_property = new_property[expected_columns]
+                        predicted_price = house_price_model.predict(new_property)[0]
 
-                    st.info(
-                        'Esta previsão é baseada no padrão histórico da base utilizada no '
-                        'treinamento. Use-a como apoio à decisão, e não como uma avaliação '
-                        'oficial do imóvel.'
-                    )
+                        st.success('Previsão gerada com sucesso.')
 
-                    with st.expander('Ver dados enviados ao modelo'):
-                        st.dataframe(new_property, use_container_width=True)
+                        st.metric(
+                            'Preço estimado de venda',
+                            f'${predicted_price:,.2f}'
+                        )
+
+                        st.info(
+                            'Esta previsão é baseada no padrão histórico da base utilizada no '
+                            'treinamento. Use-a como apoio à decisão, e não como uma avaliação '
+                            'oficial do imóvel.'
+                        )
+
+                        with st.expander('Ver dados enviados ao modelo'):
+                            st.dataframe(new_property, use_container_width=True)
 
                 except Exception as e:
                     st.error(f'Erro ao realizar a previsão: {e}')
