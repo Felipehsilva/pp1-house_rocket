@@ -135,3 +135,6 @@ comandos uteis.txt
 #doc
 Caso de Estudo - House Rocket.docx
 
+#exclude model > 100MB
+models/house_price_random_forest_pipeline.joblib
+

@@ -11,6 +11,13 @@ from streamlit_folium import folium_static
 from folium.plugins   import MarkerCluster
 import plotly.express as px 
 from folium.plugins import HeatMap
+import joblib
+
+MODEL_PATH = 'models/house_price_random_forest_pipeline.joblib'
+
+@st.cache_resource
+def load_house_price_model():
+    return joblib.load(MODEL_PATH)
 
 # ------------------------------------------
 # settings
@@ -318,5 +325,207 @@ if __name__ == "__main__":
     set_commercial( data )
     
     set_phisical( data )
+
+    # ------------------------------------------
+    # Previsao de Preco de Venda
+    # ------------------------------------------
+    st.divider()
+    st.header('Previsão de Preço de Venda')
+    st.caption(
+        'Informe as características do imóvel para obter uma estimativa de preço '
+        'com o modelo Random Forest treinado na etapa de Machine Learning.'
+    )
+
+    try:
+        house_price_model = load_house_price_model()
+        model_loaded = True
+    except Exception as e:
+        st.error(f'Erro ao carregar o modelo de previsão: {e}')
+        model_loaded = False
+
+    if model_loaded:
+        with st.form('house_price_prediction_form'):
+            c1, c2, c3 = st.columns(3)
+
+            with c1:
+                bedrooms = st.number_input(
+                    'Quartos',
+                    min_value=1,
+                    max_value=20,
+                    value=3,
+                    step=1
+                )
+
+                sqft_living = st.number_input(
+                    'Área habitável (sqft)',
+                    min_value=1,
+                    value=1800,
+                    step=50
+                )
+
+                floors = st.selectbox(
+                    'Número de andares',
+                    options=[1.0, 1.5, 2.0, 2.5, 3.0, 3.5],
+                    index=0
+                )
+
+                view = st.selectbox(
+                    'Nível de vista',
+                    options=[0, 1, 2, 3, 4],
+                    index=0
+                )
+
+                grade = st.selectbox(
+                    'Qualidade / grade do imóvel',
+                    options=list(range(1, 14)),
+                    index=6,
+                    help='1 representa qualidade mais baixa e 13 representa qualidade mais alta.'
+                )
+
+            with c2:
+                bathrooms = st.number_input(
+                    'Banheiros',
+                    min_value=0.5,
+                    max_value=10.0,
+                    value=2.0,
+                    step=0.25
+                )
+
+                sqft_lot = st.number_input(
+                    'Área do terreno (sqft)',
+                    min_value=1,
+                    value=6000,
+                    step=100
+                )
+
+                waterfront = st.selectbox(
+                    'Possui vista para água?',
+                    options=[0, 1],
+                    format_func=lambda value: 'Sim' if value == 1 else 'Não'
+                )
+
+                condition = st.selectbox(
+                    'Condição do imóvel',
+                    options=[1, 2, 3, 4, 5],
+                    index=2,
+                    help='1 representa condição mais baixa e 5 representa condição mais alta.'
+                )
+
+                sqft_above = st.number_input(
+                    'Área acima do solo (sqft)',
+                    min_value=0,
+                    value=1800,
+                    step=50
+                )
+
+            with c3:
+                sqft_basement = st.number_input(
+                    'Área do porão (sqft)',
+                    min_value=0,
+                    value=0,
+                    step=50
+                )
+
+                zipcode = st.number_input(
+                    'CEP / Zipcode',
+                    min_value=10000,
+                    max_value=99999,
+                    value=98178,
+                    step=1
+                )
+
+                latitude = st.number_input(
+                    'Latitude',
+                    min_value=47.0,
+                    max_value=48.0,
+                    value=47.51,
+                    step=0.01,
+                    format='%.5f'
+                )
+
+                longitude = st.number_input(
+                    'Longitude',
+                    min_value=-123.0,
+                    max_value=-121.0,
+                    value=-122.26,
+                    step=0.01,
+                    format='%.5f'
+                )
+
+            submitted = st.form_submit_button('Prever preço de venda')
+
+        if submitted:
+            # Validacoes dos dados de entrada
+            is_valid = True
+            if sqft_living <= 0:
+                st.warning('A área habitável (sqft_living) deve ser maior que zero.')
+                is_valid = False
+            if sqft_lot <= 0:
+                st.warning('A área do terreno (sqft_lot) deve ser maior que zero.')
+                is_valid = False
+            if bedrooms <= 0:
+                st.warning('O número de quartos (bedrooms) deve ser maior que zero.')
+                is_valid = False
+            if sqft_above > sqft_living:
+                st.warning('A área acima do solo (sqft_above) não pode ser maior que a área habitável (sqft_living).')
+                is_valid = False
+            if sqft_basement > sqft_living:
+                st.warning('A área do porão (sqft_basement) não pode ser maior que a área habitável (sqft_living).')
+                is_valid = False
+            if (sqft_above + sqft_basement) > sqft_living:
+                st.warning('A soma da área acima do solo e do porão não pode ser maior que a área habitável (sqft_living).')
+                is_valid = False
+            if len(str(int(zipcode))) != 5:
+                st.warning('O CEP (zipcode) deve possuir cinco dígitos.')
+                is_valid = False
+
+            if is_valid:
+                # Calculo automatico das variaveis derivadas
+                has_basement = int(sqft_basement > 0)
+                living_to_lot_ratio = sqft_living / sqft_lot
+                bathrooms_per_bedroom = bathrooms / bedrooms
+
+                new_property = pd.DataFrame([{
+                    'bedrooms': bedrooms,
+                    'bathrooms': bathrooms,
+                    'sqft_living': sqft_living,
+                    'sqft_lot': sqft_lot,
+                    'floors': floors,
+                    'waterfront': waterfront,
+                    'view': view,
+                    'condition': condition,
+                    'grade': grade,
+                    'sqft_above': sqft_above,
+                    'sqft_basement': sqft_basement,
+                    'zipcode': zipcode,
+                    'lat': latitude,
+                    'long': longitude,
+                    'has_basement': has_basement,
+                    'living_to_lot_ratio': living_to_lot_ratio,
+                    'bathrooms_per_bedroom': bathrooms_per_bedroom
+                }])
+
+                try:
+                    predicted_price = house_price_model.predict(new_property)[0]
+
+                    st.success('Previsão gerada com sucesso.')
+
+                    st.metric(
+                        'Preço estimado de venda',
+                        f'${predicted_price:,.2f}'
+                    )
+
+                    st.info(
+                        'Esta previsão é baseada no padrão histórico da base utilizada no '
+                        'treinamento. Use-a como apoio à decisão, e não como uma avaliação '
+                        'oficial do imóvel.'
+                    )
+
+                    with st.expander('Ver dados enviados ao modelo'):
+                        st.dataframe(new_property, use_container_width=True)
+
+                except Exception as e:
+                    st.error(f'Erro ao realizar a previsão: {e}')
+
 
 
